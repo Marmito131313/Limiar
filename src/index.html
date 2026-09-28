@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="pt-BR" class="skin-limiar-supremo" data-site-skin="padrao">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#0d0a12">
+  <meta name="description" content="Ficha digital, compêndio e campanhas de Ordem Paranormal.">
+  <title>LIMIAR — Arquivo Paranormal</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='8' fill='%230d0a12'/%3E%3Cpath d='M12 8v24h18v-5H18V8' fill='%23c9a45a'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="skin.css">
+</head>
+<body data-site-skin="padrao" data-sheet-skin="padrao" data-profile-skin="padrao" data-campaign-skin="padrao">
+  <div class="atmosphere" aria-hidden="true"></div>
+  <aside class="sidebar">
+    <a class="brand" href="#inicio">
+      <span class="brandmark">L</span>
+      <span>LIMIAR<small>ARQUIVO PARANORMAL</small></span>
+    </a>
+    <div class="side-label">ÁREA DE OPERAÇÕES</div>
+    <nav id="navigation" aria-label="Navegação principal"></nav>
+    <div class="side-bottom">
+      <div class="classified">ACESSO RESTRITO <span>↗</span></div>
+      <p>O outro lado deixa marcas.<br>Registre as suas.</p>
+      <div class="profile">
+        <span class="avatar">OP</span>
+        <div>Arquivo pessoal<small>Arquivo privado na conta</small></div>
+      </div>
+    </div>
+  </aside>
+  <div class="shell">
+    <header class="topbar">
+      <div class="breadcrumb">Arquivo pessoal <span>/</span> <strong id="crumb">Meus agentes</strong></div>
+      <span class="top-code"><span id="sync-status">Conectando…</span> <b>v30</b></span>
+    </header>
+    <main id="app"></main>
+    <footer>PROJETO DE FÃ • NÃO OFICIAL <span>Ordem Paranormal pertence aos seus respectivos criadores.</span></footer>
+  </div>
+  <div id="toast" role="status"></div>
+  <dialog id="modal">
+    <form id="modalform">
+      <div class="modalhead">
+        <h2 id="modal-title"></h2>
+        <button type="button" class="icon-button" id="closemodal" aria-label="Fechar">×</button>
+      </div>
+      <div id="modalbody"></div>
+      <div class="modalfoot">
+        <button type="button" class="button ghost" id="cancelmodal">Cancelar</button>
+        <button class="button primary" type="submit">Salvar</button>
+      </div>
+    </form>
+  </dialog>
+  <script src="app.js"></script>
+  <script src="threat-ui.js"></script>
+</body>
+</html>
