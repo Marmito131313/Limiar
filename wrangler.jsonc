@@ -18,11 +18,5 @@
       "database_id": "e40efc13-7586-4c35-87bd-3e1cf4c20aff",
       "migrations_dir": "drizzle"
     }
-  ],
-  "r2_buckets": [
-    {
-      "binding": "FILES",
-      "bucket_name": "limiar-files"
-    }
   ]
 }
