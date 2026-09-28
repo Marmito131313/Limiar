@@ -19,7 +19,8 @@
   ],
   "r2_buckets": [
     {
-      "binding": "FILES"
+      "binding": "FILES",
+      "bucket_name": "limiar-files"
     }
   ]
 }
