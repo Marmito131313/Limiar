@@ -1,5 +1,4 @@
 import fs from 'node:fs';
-const assets={};for(const [file,type] of [['index.html','text/html; charset=utf-8'],['style.css','text/css; charset=utf-8'],['skin.css','text/css; charset=utf-8'],['app.js','text/javascript; charset=utf-8'],['threat-ui.js','text/javascript; charset=utf-8'],['catalog.json','application/json; charset=utf-8'],['catalog-public.json','application/json; charset=utf-8'],['book-covers.json','application/json; charset=utf-8'],['threats.json','application/json; charset=utf-8']])assets['/'+file]={body:fs.readFileSync('src/'+file,'utf8'),type};
-for(const folder of ['threat-pages','threat-art'])for(const name of fs.readdirSync('src/'+folder))if(name.endsWith('.webp'))assets['/'+folder+'/'+name]={body:fs.readFileSync('src/'+folder+'/'+name).toString('base64'),type:'image/webp',base64:true};
-fs.mkdirSync('dist/server',{recursive:true});fs.writeFileSync('dist/server/index.js',fs.readFileSync('worker/handler.js','utf8')+'\nexport default handler('+JSON.stringify(assets)+');\n');
-console.log('Worker e assets gerados.');
+fs.mkdirSync('dist/server',{recursive:true});
+fs.writeFileSync('dist/server/index.js',fs.readFileSync('worker/handler.js','utf8')+'\nexport default handler();\n');
+console.log('Worker gerado; assets serão publicados separadamente pela Cloudflare.');
