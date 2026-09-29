@@ -1,6 +1,7 @@
 const encoder = new TextEncoder();
 const cookieName = 'limiar_session';
 const sessionDays = 30;
+const passwordIterations = 100000; // Cloudflare Workers rejects PBKDF2 counts above 100,000.
 let accountSchemaReady;
 
 const json = (data, status = 200, headers = {}) => Response.json(data, {
@@ -30,7 +31,7 @@ async function sha256(value) {
 
 async function passwordHash(password, salt) {
   const key = await crypto.subtle.importKey('raw', encoder.encode(password), 'PBKDF2', false, ['deriveBits']);
-  const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', salt: fromHex(salt), iterations: 120000, hash: 'SHA-256' }, key, 256);
+  const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', salt: fromHex(salt), iterations: passwordIterations, hash: 'SHA-256' }, key, 256);
   return [...new Uint8Array(bits)].map(x => x.toString(16).padStart(2, '0')).join('');
 }
 
