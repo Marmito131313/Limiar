@@ -210,6 +210,30 @@ export async function accountRoute(request, env, path, url) {
     if (sessionToken) await env.DB.prepare('DELETE FROM sessions WHERE token_hash = ?').bind(await sha256(sessionToken)).run();
     return json({ ok: true }, 200, { 'Set-Cookie': `${cookieName}=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Strict` });
   }
+  const publicProfile = path.match(/^\/api\/social\/profile\/([^/]+)$/i);
+  if (publicProfile && request.method === 'GET') {
+    let handle = '';
+    try { handle = decodeURIComponent(publicProfile[1]).trim(); } catch {}
+    if (!/^[a-z0-9_]{3,24}$/i.test(handle)) return json({ error: 'Nome de usuário inválido.' }, 400);
+    const profile = await env.DB.prepare(`SELECT a.id, a.handle, a.display_name, a.bio, a.avatar_data, a.banner_data,
+      (SELECT COUNT(*) FROM account_follows f WHERE f.followed_id=a.id) AS follower_count,
+      (SELECT COUNT(*) FROM account_follows f WHERE f.follower_id=a.id) AS following_count,
+      CASE WHEN a.id=? THEN 1 ELSE 0 END AS is_self,
+      EXISTS(SELECT 1 FROM account_follows f WHERE f.follower_id=? AND f.followed_id=a.id) AS is_following
+      FROM accounts a WHERE a.handle=? COLLATE NOCASE`).bind(userId, userId, handle).first();
+    if (!profile) return json({ error: 'Este perfil não existe ou não está disponível.' }, 404);
+    return json({ profile: {
+      handle: profile.handle,
+      displayName: profile.display_name,
+      bio: profile.bio || '',
+      avatar: profile.avatar_data || '',
+      banner: profile.banner_data || '',
+      followerCount: Number(profile.follower_count) || 0,
+      followingCount: Number(profile.following_count) || 0,
+      isSelf: !!profile.is_self,
+      isFollowing: !!profile.is_following
+    } });
+  }
   if (!userId) return json({ error: 'Entre na sua conta para continuar.' }, 401);
   const account = await accountById(env, userId);
   if (!account) return json({ error: 'Crie um perfil LIMIAR para usar contas e recursos sociais.' }, 403);
