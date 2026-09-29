@@ -112,7 +112,7 @@ export async function resolveUser(request, env) {
     const session = await env.DB.prepare('SELECT user_id FROM sessions WHERE token_hash = ? AND expires_at > ?').bind(tokenHash, Date.now()).first();
     if (session) return session.user_id;
   }
-  return request.headers.get('oai-authenticated-user-id') || '';
+  return '';
 }
 
 async function issueSession(env, userId, account) {
@@ -148,13 +148,16 @@ async function register(request, env) {
   if (!/^[a-z0-9_]{3,24}$/.test(handle) || ['admin', 'limiar', 'system', 'suporte'].includes(handle)) return json({ error: 'Use um nome de usuário com 3 a 24 letras, números ou _.' }, 400);
   if (displayName.length < 1 || displayName.length > 50) return json({ error: 'Informe um nome de exibição de até 50 caracteres.' }, 400);
   if (password.length < 10 || password.length > 128) return json({ error: 'A senha precisa ter entre 10 e 128 caracteres.' }, 400);
-  const id = request.headers.get('oai-authenticated-user-id') || crypto.randomUUID();
+  const id = crypto.randomUUID();
   const salt = randomHex(16), digest = await passwordHash(password, salt), now = Date.now();
   try {
     await env.DB.prepare('INSERT INTO accounts (id,handle,display_name,password_salt,password_hash,created_at) VALUES (?,?,?,?,?,?)')
       .bind(id, handle, displayName, salt, digest, now).run();
-  } catch {
-    return json({ error: 'Esse nome de usuário já está em uso. Escolha outro.' }, 409);
+  } catch (error) {
+    if (/UNIQUE constraint failed:\s*accounts\.handle/i.test(String(error?.message || error))) {
+      return json({ error: 'Esse nome de usuário já está em uso. Escolha outro.' }, 409);
+    }
+    throw error;
   }
   const account = await accountById(env, id);
   const result = await issueSession(env, id, account);
@@ -198,7 +201,7 @@ export async function accountRoute(request, env, path, url) {
 
   if (path === '/api/auth/me' && request.method === 'GET') {
     const account = await accountById(env, userId);
-    return json({ account: safeAccount(account), authenticated: !!userId, workspace: !!request.headers.get('oai-authenticated-user-id') && !sessionToken });
+    return json({ account: safeAccount(account), authenticated: !!userId, workspace: false });
   }
   if (path === '/api/auth/register' && request.method === 'POST') return register(request, env);
   if (path === '/api/auth/login' && request.method === 'POST') return login(request, env);
